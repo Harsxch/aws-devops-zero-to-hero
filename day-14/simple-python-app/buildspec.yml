@@ -13,8 +13,7 @@ phases:
 
   pre_build:
     commands:
-      - echo "Converting environment variables to lowercase..."
-      # Convert uppercase to lowercase and replace underscores with hyphens if needed
+      - echo "Lowercasing env vars..."
       - export LOWERCASE_CREDENTIALS_URL=$(echo "$DOCKER_CREDENTIALS_URL" | tr '[:upper:]' '[:lower:]' | sed 's/_/-/g')
       - export LOWERCASE_CREDENTIALS_USERNAME=$(echo "$DOCKER_CREDENTIALS_USERNAME" | tr '[:upper:]' '[:lower:]' | sed 's/_/-/g')
       - echo "LOWERCASE_CREDENTIALS_URL: $LOWERCASE_CREDENTIALS_URL"
@@ -27,8 +26,10 @@ phases:
           -u "$LOWERCASE_CREDENTIALS_USERNAME" \
           --password-stdin "$LOWERCASE_CREDENTIALS_URL"
 
-      - echo "Building and pushing Docker image..."
+      - echo "Building image with tag => $LOWERCASE_CREDENTIALS_URL/$LOWERCASE_CREDENTIALS_USERNAME/simple-python-flash-app:latest"
       - docker build -t "$LOWERCASE_CREDENTIALS_URL/$LOWERCASE_CREDENTIALS_USERNAME/simple-python-flash-app:latest" .
+
+      - echo "Pushing image..."
       - docker push "$LOWERCASE_CREDENTIALS_URL/$LOWERCASE_CREDENTIALS_USERNAME/simple-python-flash-app:latest"
 
   post_build:
@@ -39,5 +40,4 @@ artifacts:
   files:
     - '**/*'
   base-directory: ./simple-python-app
-
 
