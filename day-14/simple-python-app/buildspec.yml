@@ -18,7 +18,7 @@ phases:
       - echo "LOWERCASE_CREDENTIALS_URL: $LOWERCASE_CREDENTIALS_URL"
       - echo "LOWERCASE_CREDENTIALS_USERNAME: $LOWERCASE_CREDENTIALS_USERNAME"
 
-  build:
+   build:
     commands:
       - echo "Building Docker Image..."
       - echo $DOCKER_CREDENTIALS_PASSWORD | docker login -u "$LOWERCASE_CREDENTIALS_USERNAME" --password-stdin "$LOWERCASE_CREDENTIALS_URL"
