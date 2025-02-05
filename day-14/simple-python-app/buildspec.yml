@@ -1,40 +1,41 @@
 version: 0.2
-
 env:
   parameter-store:
     DOCKER_REGISTRY_USERNAME: /myapp/docker-credentials/username
     DOCKER_REGISTRY_PASSWORD: /myapp/docker-credentials/password
     DOCKER_REGISTRY_URL: /myapp/docker-registry/url
+
 phases:
   install:
     runtime-versions:
       python: 3.11
-  pre_build:
-  commands:
-    - echo "DOCKER_REGISTRY_URL: $DOCKER_REGISTRY_URL"
-    - echo "DOCKER_REGISTRY_USERNAME: $DOCKER_REGISTRY_USERNAME"
-    - echo "DOCKER_REGISTRY_PASSWORD: $DOCKER_REGISTRY_PASSWORD"
-    - export LOWERCASE_REGISTRY_URL=$(echo $DOCKER_REGISTRY_URL | tr '[:upper:]' '[:lower:]')
-    - export LOWERCASE_REGISTRY_USERNAME=$(echo $DOCKER_REGISTRY_USERNAME | tr '[:upper:]' '[:lower:]')
-    - echo "Lowercase DOCKER_REGISTRY_URL: $LOWERCASE_REGISTRY_URL"
-    - echo "Lowercase DOCKER_REGISTRY_USERNAME: $LOWERCASE_REGISTRY_USERNAME"
 
+  pre_build:
+    commands:
+      - echo "DOCKER_REGISTRY_URL: $DOCKER_REGISTRY_URL"
+      - echo "DOCKER_REGISTRY_USERNAME: $DOCKER_REGISTRY_USERNAME"
+      - echo "DOCKER_REGISTRY_PASSWORD: $DOCKER_REGISTRY_PASSWORD"
+      - export LOWERCASE_REGISTRY_URL=$(echo $DOCKER_REGISTRY_URL | tr '[:upper:]' '[:lower:]')
+      - export LOWERCASE_REGISTRY_USERNAME=$(echo $DOCKER_REGISTRY_USERNAME | tr '[:upper:]' '[:lower:]')
+      - echo "Lowercase DOCKER_REGISTRY_URL: $LOWERCASE_REGISTRY_URL"
+      - echo "Lowercase DOCKER_REGISTRY_USERNAME: $LOWERCASE_REGISTRY_USERNAME"
 
   build:
-  commands:
-    - echo "Running tests..."
-    - cd day-13/simple-python-app/
-    - echo "Building Docker image..."
-    - echo $DOCKER_REGISTRY_PASSWORD | docker login -u "$LOWERCASE_REGISTRY_USERNAME" --password-stdin "$LOWERCASE_REGISTRY_URL"
-    - docker build -t "$LOWERCASE_REGISTRY_URL/$LOWERCASE_REGISTRY_USERNAME/simple-python-flask-app:latest" .
-    - docker push "$LOWERCASE_REGISTRY_URL/$LOWERCASE_REGISTRY_USERNAME/simple-python-flask-app:latest"
-
+    commands:
+      - echo "Running tests..."
+      - cd day-13/simple-python-app/
+      - echo "Building Docker image..."
+      - echo $DOCKER_REGISTRY_PASSWORD | docker login -u "$LOWERCASE_REGISTRY_USERNAME" --password-stdin "$LOWERCASE_REGISTRY_URL"
+      - docker build -t "$LOWERCASE_REGISTRY_URL/$LOWERCASE_REGISTRY_USERNAME/simple-python-flask-app:latest" .
+      - docker push "$LOWERCASE_REGISTRY_URL/$LOWERCASE_REGISTRY_USERNAME/simple-python-flask-app:latest"
 
   post_build:
     commands:
       - echo "Build completed successfully!"
+
 artifacts:
   files:
     - '**/*'
   base-directory: ../simple-python-app
+
 
