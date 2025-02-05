@@ -1,4 +1,5 @@
 version: 0.2
+
 env:
   parameter-store:
     DOCKER_CREDENTIALS_USERNAME: /myapp/docker-credentials/username
@@ -13,15 +14,19 @@ phases:
   pre_build:
     commands:
       - echo "Converting environment variables to lowercase..."
-      - export LOWERCASE_CREDENTIALS_URL=$(echo "$DOCKER_CREDENTIALS_URL" | tr '[:upper:]' '[:lower:]')
-      - export LOWERCASE_CREDENTIALS_USERNAME=$(echo "$DOCKER_CREDENTIALS_USERNAME" | tr '[:upper:]' '[:lower:]')
+      # Convert uppercase to lowercase and replace underscores with hyphens if needed
+      - export LOWERCASE_CREDENTIALS_URL=$(echo "$DOCKER_CREDENTIALS_URL" | tr '[:upper:]' '[:lower:]' | sed 's/_/-/g')
+      - export LOWERCASE_CREDENTIALS_USERNAME=$(echo "$DOCKER_CREDENTIALS_USERNAME" | tr '[:upper:]' '[:lower:]' | sed 's/_/-/g')
       - echo "LOWERCASE_CREDENTIALS_URL: $LOWERCASE_CREDENTIALS_URL"
       - echo "LOWERCASE_CREDENTIALS_USERNAME: $LOWERCASE_CREDENTIALS_USERNAME"
 
   build:
     commands:
       - echo "Logging into Docker registry..."
-      - echo "$DOCKER_CREDENTIALS_PASSWORD" | docker login -u "$LOWERCASE_CREDENTIALS_USERNAME" --password-stdin "$LOWERCASE_CREDENTIALS_URL"
+      - echo "$DOCKER_CREDENTIALS_PASSWORD" | docker login \
+          -u "$LOWERCASE_CREDENTIALS_USERNAME" \
+          --password-stdin "$LOWERCASE_CREDENTIALS_URL"
+
       - echo "Building and pushing Docker image..."
       - docker build -t "$LOWERCASE_CREDENTIALS_URL/$LOWERCASE_CREDENTIALS_USERNAME/simple-python-flash-app:latest" .
       - docker push "$LOWERCASE_CREDENTIALS_URL/$LOWERCASE_CREDENTIALS_USERNAME/simple-python-flash-app:latest"
@@ -33,5 +38,6 @@ phases:
 artifacts:
   files:
     - '**/*'
-  base-directory: ../simple-python-app
+  base-directory: ./simple-python-app
+
 
