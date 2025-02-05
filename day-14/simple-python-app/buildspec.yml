@@ -21,7 +21,11 @@ phases:
   build:
     commands:
       - echo "Building Docker Image..."
+      - echo "Docker Password: $DOCKER_CREDENTIALS_PASSWORD"
+      - echo "Lowercase Username: $LOWERCASE_CREDENTIALS_USERNAME"
+      - echo "Lowercase URL: $LOWERCASE_CREDENTIALS_URL"
       - echo $DOCKER_CREDENTIALS_PASSWORD | docker login -u "$LOWERCASE_CREDENTIALS_USERNAME" --password-stdin "$LOWERCASE_CREDENTIALS_URL"
+      - echo "Docker tag: $LOWERCASE_CREDENTIALS_URL/$LOWERCASE_CREDENTIALS_USERNAME/simple-python-flash-app:latest"
       - docker build -t "$LOWERCASE_CREDENTIALS_URL/$LOWERCASE_CREDENTIALS_USERNAME/simple-python-flash-app:latest" .
       - docker push "$LOWERCASE_CREDENTIALS_URL/$LOWERCASE_CREDENTIALS_USERNAME/simple-python-flash-app:latest"
 
@@ -33,6 +37,5 @@ artifacts:
   files:
     - '**/*'
   base-directory: ../simple-python-app
-
 
 
