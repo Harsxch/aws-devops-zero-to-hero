@@ -21,11 +21,9 @@ phases:
   build:
     commands:
       - echo "Building Docker Image..."
-      - echo "Logging in to Docker registry..."
       - echo "$DOCKER_CREDENTIALS_PASSWORD" | docker login -u "$LOWERCASE_CREDENTIALS_USERNAME" --password-stdin "$LOWERCASE_CREDENTIALS_URL"
-      - echo "Building Docker image tag: $LOWERCASE_CREDENTIALS_URL/$LOWERCASE_CREDENTIALS_USERNAME/simple-python-flash-app:latest"
+      - echo "Docker tag: $LOWERCASE_CREDENTIALS_URL/$LOWERCASE_CREDENTIALS_USERNAME/simple-python-flash-app:latest"
       - docker build -t "$LOWERCASE_CREDENTIALS_URL/$LOWERCASE_CREDENTIALS_USERNAME/simple-python-flash-app:latest" .
-      - echo "Pushing Docker image to registry..."
       - docker push "$LOWERCASE_CREDENTIALS_URL/$LOWERCASE_CREDENTIALS_USERNAME/simple-python-flash-app:latest"
 
   post_build:
